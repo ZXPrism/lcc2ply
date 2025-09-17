@@ -36,6 +36,11 @@ bool Parser::parse_meta() {
 	}
 
 	std::println(std::cout, "lcc2ply: this scene contains {} lod levels", _LodLevelCnt);
+	std::cout << "distribution: [";
+	for (size_t i = 0; i < _LodLevelCnt; i++) {
+		std::cout << _SplatCntPerLodLevel[i] << " ]"[i == _LodLevelCnt - 1];
+	}
+	std::cout << '\n';
 
 	return true;
 }
@@ -71,7 +76,8 @@ bool Parser::parse_index() {
 
 			if (DEBUG_OUTPUT) {
 				std::println(std::cout,
-				             "splat_cnt: {}, offset_bytes = {}, n_bytes = {}",
+				             "[{}] splat_cnt: {}, offset_bytes = {}, n_bytes = {}",
+				             i,
 				             chunk_info.splat_cnt,
 				             chunk_info.offset_bytes,
 				             chunk_info.n_bytes);
@@ -81,12 +87,10 @@ bool Parser::parse_index() {
 
 			if (chunk_info.splat_cnt != 0) {
 				if (chunk_info.n_bytes % chunk_info.splat_cnt != 0 || chunk_info.n_bytes / chunk_info.splat_cnt != 32) {
-					std::println(std::cout, "lcc2ply: error: consistency check failed (splat cnt & size mismatch), index.bin may be corrupted");
-					return false;
+					std::println(std::cout, "lcc2ply: warning: consistency check failed (splat cnt & size mismatch), index.bin may be corrupted");
 				}
 				if (presum_size_bytes != chunk_info.offset_bytes) {
-					std::println(std::cout, "lcc2ply: error: consistency check failed (prefix sum mismatch), index.bin may be corrupted");
-					return false;
+					std::println(std::cout, "lcc2ply: warning: consistency check failed (prefix sum mismatch), index.bin may be corrupted");
 				}
 			}
 			presum_size_bytes += chunk_info.n_bytes;
@@ -100,8 +104,13 @@ bool Parser::parse_index() {
 	}
 
 	if (splat_cnt_per_lod_level != _SplatCntPerLodLevel) {
-		std::println(std::cout, "lcc2ply: error: consistency check failed (splat cnt mismatch), index.bin may be corrupted");
-		return false;
+		std::println(std::cout, "lcc2ply: warning: consistency check failed (splat cnt mismatch), index.bin may be corrupted");
+
+		std::cout << "current distribution: [";
+		for (size_t i = 0; i < _LodLevelCnt; i++) {
+			std::cout << splat_cnt_per_lod_level[i] << " ]"[i == _LodLevelCnt - 1];
+		}
+		std::cout << '\n';
 	}
 
 	return true;
@@ -186,6 +195,10 @@ bool Parser::parse_fg() {
 		if (DEBUG_OUTPUT) {
 			std::cout << '\n';
 		}
+
+		if (splat_id > 10000) {
+			break;
+		}
 	}
 
 	_SplatCnt = _SplatPositionVec.size();
@@ -220,7 +233,7 @@ void Parser::write_ply(const std::string &filename) const {
 	};
 	PlyWriter writer(column_name_vec, _SplatCnt);
 	for (size_t i = 0; i < _SplatCnt; i++) {
-		std::vector<f32> entry(14);
+		std::vector<f32> entry(column_name_vec.size());
 
 		entry[0] = _SplatPositionVec[i].x;
 		entry[1] = _SplatPositionVec[i].y;
