@@ -20,6 +20,8 @@ private:
 	std::vector<size_t> _SplatCntPerLodLevel;
 	size_t _LodLevelCnt;
 
+	std::map<std::pair<size_t, size_t>, std::vector<ChunkInfo>> _ChunkPosToChunkInfoVec;
+
 	size_t _SplatCnt;
 	std::vector<SplatPosition> _SplatPositionVec;
 	std::vector<SplatColor> _SplatColorVec;
@@ -32,7 +34,7 @@ public:
 
 	bool parse_meta();
 	bool parse_index();
-	bool parse_fg();
+	bool parse_fg(size_t lod_level);
 	bool parse_bg();
 	bool parse_sh();
 

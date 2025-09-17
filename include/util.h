@@ -3,6 +3,7 @@
 #include <cstring>
 #include <filesystem>
 #include <format>
+#include <print>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,16 @@ template<typename TargetType>
 	TargetType res;
 	std::memcpy(&res, data_base_addr, sizeof(TargetType));
 	return res;
+}
+
+template<typename... Args>
+void _print(std::format_string<Args...> fmt, Args &&...args) {
+	std::print(fmt, std::forward<Args>(args)...);
+}
+
+template<typename... Args>
+void _println(std::format_string<Args...> fmt, Args &&...args) {
+	std::println(fmt, std::forward<Args>(args)...);
 }
 
 template<typename Ty>

@@ -4,8 +4,8 @@
 using namespace lcc2ply;
 
 int main() {
-	Parser parser("scenes/ConfuciusTemple");
-	if (!parser.parse_meta() || !parser.parse_index() || !parser.parse_fg()) {
+	Parser parser("scenes/PentHouse");
+	if (!parser.parse_meta() || !parser.parse_index() || !parser.parse_fg(2)) {
 		return -1;
 	}
 	parser.write_ply("output.ply");

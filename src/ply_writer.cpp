@@ -15,7 +15,7 @@ PlyWriter::PlyWriter(const std::vector<std::string> &column_name_vec, size_t spl
 
 void PlyWriter::add_entry(const std::vector<f32> &entry_data) {
 	if (_ColumnNameVec.size() != entry_data.size()) {
-		std::print(std::cout, "lcc2ply: error: entry data does not match with the columns");
+		_print("lcc2ply: error: entry data does not match with the columns");
 		return;
 	}
 
@@ -24,7 +24,7 @@ void PlyWriter::add_entry(const std::vector<f32> &entry_data) {
 
 void PlyWriter::write_to_file(const std::string &filename) const {
 	if (_SplatCnt != _EntryVec.size()) {
-		std::print(std::cout, "lcc2ply: error: splat cnt does not match with entry cnt");
+		_print("lcc2ply: error: splat cnt does not match with entry cnt");
 		return;
 	}
 
@@ -63,8 +63,8 @@ void PlyWriter::write_to_file(const std::string &filename) const {
 	const size_t entry_size_bytes = _ColumnNameVec.size() * sizeof(f32);
 	std::vector<char> binary(_SplatCnt * entry_size_bytes);
 
-	std::println(std::cout, "lcc2ply: writing file {}...", filename);
-	std::println(std::cout, "lcc2ply: file size: {} bytes", binary.size());
+	_println("lcc2ply: writing file {}...", filename);
+	_println("lcc2ply: file size: {} bytes", binary.size());
 
 	for (size_t i = 0, offset = 0; i < _SplatCnt; i++, offset += entry_size_bytes) {
 		std::memcpy(binary.data() + offset, _EntryVec[i].data(), entry_size_bytes);
@@ -74,6 +74,8 @@ void PlyWriter::write_to_file(const std::string &filename) const {
 	fout.write(binary.data(), binary.size());
 
 	fout.close();
+
+	_println("lcc2ply: output data written to file {}", filename);
 }
 
 }  // namespace lcc2ply
