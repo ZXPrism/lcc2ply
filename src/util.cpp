@@ -14,7 +14,7 @@ std::vector<char> read_binary(const std::filesystem::path &path) {
 	fin.read(res.data(), data_size_bytes);
 	fin.close();
 
-	std::println(std::cout, "lcc2ply: read file {} with size {}", path.string(), data_size_bytes);
+	std::println(std::cout, "lcc2ply: read file {} with size {} bytes", path.string(), data_size_bytes);
 
 	return res;
 }

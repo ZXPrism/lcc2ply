@@ -36,7 +36,7 @@ public:
 	bool parse_bg();
 	bool parse_sh();
 
-	void write_ply() const;
+	void write_ply(const std::string &filename) const;
 };
 
 }  // namespace lcc2ply

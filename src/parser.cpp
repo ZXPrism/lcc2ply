@@ -201,7 +201,48 @@ bool Parser::parse_sh() {
 	return true;
 }
 
-void Parser::write_ply() const {
+void Parser::write_ply(const std::string &filename) const {
+	const std::vector<std::string> column_name_vec{
+		"x",
+		"y",
+		"z",
+		"f_dc_0",
+		"f_dc_1",
+		"f_dc_2",
+		"opacity",
+		"scale_0",
+		"scale_1",
+		"scale_2",
+		"rot_0",
+		"rot_1",
+		"rot_2",
+		"rot_3"
+	};
+	PlyWriter writer(column_name_vec, _SplatCnt);
+	for (size_t i = 0; i < _SplatCnt; i++) {
+		std::vector<f32> entry(14);
+
+		entry[0] = _SplatPositionVec[i].x;
+		entry[1] = _SplatPositionVec[i].y;
+		entry[2] = _SplatPositionVec[i].z;
+
+		entry[3] = _SplatColorVec[i].r;
+		entry[4] = _SplatColorVec[i].g;
+		entry[5] = _SplatColorVec[i].b;
+		entry[6] = _SplatColorVec[i].a;
+
+		entry[7] = _SplatCovVec[i].s_x;
+		entry[8] = _SplatCovVec[i].s_y;
+		entry[9] = _SplatCovVec[i].s_z;
+
+		entry[10] = _SplatCovVec[i].quat_x;
+		entry[11] = _SplatCovVec[i].quat_y;
+		entry[12] = _SplatCovVec[i].quat_z;
+		entry[13] = _SplatCovVec[i].quat_w;
+
+		writer.add_entry(entry);
+	}
+	writer.write_to_file(filename);
 }
 
 }  // namespace lcc2ply

@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 namespace lcc2ply {
 
-constexpr bool DEBUG_OUTPUT [[maybe_unused]] = true;
+constexpr bool DEBUG_OUTPUT [[maybe_unused]] = false;
 
 template<typename TargetType>
 [[nodiscard]] TargetType reinterpret_data(const void *data_base_addr) {
