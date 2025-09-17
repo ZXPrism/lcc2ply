@@ -79,9 +79,15 @@ bool Parser::parse_index() {
 
 			splat_cnt_per_lod_level[i] += chunk_info.splat_cnt;
 
-			if (chunk_info.splat_cnt != 0 && presum_size_bytes != chunk_info.offset_bytes) {
-				std::println(std::cout, "lcc2ply: error: consistency check failed (prefix sum mismatch), index.bin may be corrupted");
-				return false;
+			if (chunk_info.splat_cnt != 0) {
+				if (chunk_info.n_bytes % chunk_info.splat_cnt != 0 || chunk_info.n_bytes / chunk_info.splat_cnt != 32) {
+					std::println(std::cout, "lcc2ply: error: consistency check failed (splat cnt & size mismatch), index.bin may be corrupted");
+					return false;
+				}
+				if (presum_size_bytes != chunk_info.offset_bytes) {
+					std::println(std::cout, "lcc2ply: error: consistency check failed (prefix sum mismatch), index.bin may be corrupted");
+					return false;
+				}
 			}
 			presum_size_bytes += chunk_info.n_bytes;
 
@@ -102,7 +108,6 @@ bool Parser::parse_index() {
 }
 
 bool Parser::parse_fg() {
-	// 1.2. parse scale range
 	std::array<f32, 3> scale_lb;
 	std::array<f32, 3> scale_ub;
 
@@ -171,6 +176,10 @@ bool Parser::parse_fg() {
 			std::println(std::cout, "opacity: {}", color.a);
 		}
 
+		_SplatPositionVec.push_back(position);
+		_SplatColorVec.push_back(color);
+		_SplatCovVec.push_back(cov);
+
 		offset += 32;
 		++splat_id;
 
@@ -178,6 +187,8 @@ bool Parser::parse_fg() {
 			std::cout << '\n';
 		}
 	}
+
+	_SplatCnt = _SplatPositionVec.size();
 
 	return true;
 }

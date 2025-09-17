@@ -15,10 +15,15 @@ namespace lcc2ply {
 class Parser {
 private:
 	const fs::path _SceneFolder;
-
 	Json::Value _MetaRoot;
+
 	std::vector<size_t> _SplatCntPerLodLevel;
 	size_t _LodLevelCnt;
+
+	size_t _SplatCnt;
+	std::vector<SplatPosition> _SplatPositionVec;
+	std::vector<SplatColor> _SplatColorVec;
+	std::vector<SplatCov> _SplatCovVec;
 
 public:
 	Parser(std::string scene_folder);
