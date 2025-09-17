@@ -1,6 +1,7 @@
 #include <parser.h>
 #include <ply_writer.h>
 
+#include <cmath>
 #include <fstream>
 #include <iostream>
 
@@ -196,9 +197,9 @@ bool Parser::parse_fg() {
 			std::cout << '\n';
 		}
 
-		if (splat_id > 10000) {
-			break;
-		}
+		// if (splat_id > 10000) {
+		// 	break;
+		// }
 	}
 
 	_SplatCnt = _SplatPositionVec.size();
@@ -231,23 +232,28 @@ void Parser::write_ply(const std::string &filename) const {
 		"rot_2",
 		"rot_3"
 	};
+
 	PlyWriter writer(column_name_vec, _SplatCnt);
 	for (size_t i = 0; i < _SplatCnt; i++) {
 		std::vector<f32> entry(column_name_vec.size());
 
+		// position
 		entry[0] = _SplatPositionVec[i].x;
 		entry[1] = _SplatPositionVec[i].y;
 		entry[2] = _SplatPositionVec[i].z;
 
+		// f_dc & opacity
 		entry[3] = _SplatColorVec[i].r;
 		entry[4] = _SplatColorVec[i].g;
 		entry[5] = _SplatColorVec[i].b;
-		entry[6] = _SplatColorVec[i].a;
+		entry[6] = std::logf(_SplatColorVec[i].a / (1 - _SplatColorVec[i].a));
 
-		entry[7] = _SplatCovVec[i].s_x;
-		entry[8] = _SplatCovVec[i].s_y;
-		entry[9] = _SplatCovVec[i].s_z;
+		// scale
+		entry[7] = std::logf(_SplatCovVec[i].s_x);
+		entry[8] = std::logf(_SplatCovVec[i].s_y);
+		entry[9] = std::logf(_SplatCovVec[i].s_z);
 
+		// rot
 		entry[10] = _SplatCovVec[i].quat_x;
 		entry[11] = _SplatCovVec[i].quat_y;
 		entry[12] = _SplatCovVec[i].quat_z;
