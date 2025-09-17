@@ -53,6 +53,8 @@ bool Parser::parse_index() {
 
 	const size_t index_data_size_bytes = index_data.size();
 	const auto *index_data_base_addr = index_data.data();
+	size_t max_chunk_pos_x = 0;
+	size_t max_chunk_pos_y = 0;
 	size_t offset = 0;
 
 	// consistency check: sum of previous sizes should equal to current offset
@@ -64,6 +66,9 @@ bool Parser::parse_index() {
 	while (offset < index_data_size_bytes) {
 		const auto chunk_pos = reinterpret_data<ChunkPos>(index_data_base_addr + offset);
 		offset += sizeof(ChunkPos);
+
+		max_chunk_pos_x = std::max(max_chunk_pos_x, static_cast<size_t>(chunk_pos.x));
+		max_chunk_pos_y = std::max(max_chunk_pos_y, static_cast<size_t>(chunk_pos.y));
 
 		if (DEBUG_OUTPUT) {
 			_println("chunk at ({}, {})", chunk_pos.x, chunk_pos.y);
@@ -113,6 +118,24 @@ bool Parser::parse_index() {
 		std::cout << '\n';
 	}
 
+	// print chunk distribution diagram
+	std::cout << "  ";
+	for (size_t x = 0; x <= max_chunk_pos_x; x++) {
+		_print("{:3}", x);
+	}
+	std::cout << '\n';
+	for (size_t y = 0; y <= max_chunk_pos_y; y++) {
+		_print("{:2}", y);
+		for (size_t x = 0; x <= max_chunk_pos_x; x++) {
+			if (_ChunkPosToChunkInfoVec.contains({ x, y })) {
+				std::cout << "  X";
+			} else {
+				std::cout << "  O";
+			}
+		}
+		std::cout << '\n';
+	}
+
 	return true;
 }
 
@@ -146,11 +169,6 @@ bool Parser::parse_fg(size_t lod_level) {
 	const Range<f32> scale_range_x(scale_lb[0], scale_ub[0]);
 	const Range<f32> scale_range_y(scale_lb[1], scale_ub[1]);
 	const Range<f32> scale_range_z(scale_lb[2], scale_ub[2]);
-	if (DEBUG_OUTPUT) {
-		_println("scale_range_x: {}", scale_range_x.string());
-		_println("scale_range_y: {}", scale_range_y.string());
-		_println("scale_range_z: {}", scale_range_z.string());
-	}
 
 	const fs::path scene_fg_data_file_path = _SceneFolder / "data.bin";
 
