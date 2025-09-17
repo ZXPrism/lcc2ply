@@ -1,4 +1,5 @@
 #include <parser.h>
+#include <ply_writer.h>
 
 #include <fstream>
 #include <iostream>
@@ -28,25 +29,33 @@ bool Parser::parse_meta() {
 
 	// parse lod distribution
 	const auto &lod_distribution_node = _MetaRoot["splats"];
-	// for (const auto &splat_cnt_per_lod_node : lod_distribution_node) {
-	// 	const int splat_cnt_per_lod = splat_cnt_per_lod_node.asInt();
-	// }
-	// TODO: consistency check: sigma splats cnt under each level matches index.bin lod info
 	_LodLevelCnt = lod_distribution_node.size();
+	for (const auto &splat_cnt_per_lod_node : lod_distribution_node) {
+		const int splat_cnt_per_lod = splat_cnt_per_lod_node.asInt();
+		_SplatCntPerLodLevel.push_back(splat_cnt_per_lod);
+	}
+
 	std::println(std::cout, "lcc2ply: this scene contains {} lod levels", _LodLevelCnt);
 
 	return true;
 }
 
 bool Parser::parse_index() {
-	// TODO: add consistency check: psum(n_bytes) = offset
 	const fs::path scene_index_file_path = _SceneFolder / "index.bin";
 
 	const std::vector<char> index_data = read_binary(scene_index_file_path);
+
 	std::map<std::pair<size_t, size_t>, std::vector<ChunkInfo>> chunk_pos_to_chunk_info_vec;
 	const size_t index_data_size_bytes = index_data.size();
 	const auto *index_data_base_addr = index_data.data();
 	size_t offset = 0;
+
+	// consistency check: sum of previous sizes should equal to current offset
+	size_t presum_size_bytes = 0;
+
+	// consistency check: number of splats in each level should correspond to the data in meta.lcc
+	std::vector<size_t> splat_cnt_per_lod_level(_SplatCntPerLodLevel.size());
+
 	while (offset < index_data_size_bytes) {
 		const auto chunk_pos = reinterpret_data<ChunkPos>(index_data_base_addr + offset);
 		offset += sizeof(ChunkPos);
@@ -68,12 +77,25 @@ bool Parser::parse_index() {
 				             chunk_info.n_bytes);
 			}
 
+			splat_cnt_per_lod_level[i] += chunk_info.splat_cnt;
+
+			if (chunk_info.splat_cnt != 0 && presum_size_bytes != chunk_info.offset_bytes) {
+				std::println(std::cout, "lcc2ply: error: consistency check failed (prefix sum mismatch), index.bin may be corrupted");
+				return false;
+			}
+			presum_size_bytes += chunk_info.n_bytes;
+
 			chunk_info_vec.push_back(chunk_info);
 		}
 
 		if (DEBUG_OUTPUT) {
 			std::cout << '\n';
 		}
+	}
+
+	if (splat_cnt_per_lod_level != _SplatCntPerLodLevel) {
+		std::println(std::cout, "lcc2ply: error: consistency check failed (splat cnt mismatch), index.bin may be corrupted");
+		return false;
 	}
 
 	return true;
@@ -166,6 +188,9 @@ bool Parser::parse_bg() {
 
 bool Parser::parse_sh() {
 	return true;
+}
+
+void Parser::write_ply() const {
 }
 
 }  // namespace lcc2ply

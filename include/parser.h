@@ -8,6 +8,7 @@
 #include <json/json.h>
 
 #include <string>
+#include <vector>
 
 namespace lcc2ply {
 
@@ -16,6 +17,7 @@ private:
 	const fs::path _SceneFolder;
 
 	Json::Value _MetaRoot;
+	std::vector<size_t> _SplatCntPerLodLevel;
 	size_t _LodLevelCnt;
 
 public:
@@ -28,6 +30,8 @@ public:
 	bool parse_fg();
 	bool parse_bg();
 	bool parse_sh();
+
+	void write_ply() const;
 };
 
 }  // namespace lcc2ply

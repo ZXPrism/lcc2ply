@@ -8,6 +8,7 @@ int main() {
 	if (!parser.parse_meta() || !parser.parse_index() || !parser.parse_fg()) {
 		return -1;
 	}
+	parser.write_ply();
 
 	return 0;
 }
