@@ -278,10 +278,10 @@ void Parser::write_ply(const std::string &filename) const {
 		entry[9] = std::logf(_SplatCovVec[i].s_z);
 
 		// rot
-		entry[10] = _SplatCovVec[i].quat_x;
-		entry[11] = _SplatCovVec[i].quat_y;
-		entry[12] = _SplatCovVec[i].quat_z;
-		entry[13] = _SplatCovVec[i].quat_w;
+		entry[10] = _SplatCovVec[i].quat_w;
+		entry[11] = _SplatCovVec[i].quat_x;
+		entry[12] = _SplatCovVec[i].quat_y;
+		entry[13] = _SplatCovVec[i].quat_z;
 
 		writer.add_entry(entry);
 	}
