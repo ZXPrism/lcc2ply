@@ -1,7 +1,7 @@
 set_project("lcc2ply")
 
 add_rules("mode.debug", "mode.release")
-add_requires("jsoncpp")
+add_requires("jsoncpp", "cli11")
 
 target("lcc2ply")
     set_languages("cxx20")
@@ -10,7 +10,7 @@ target("lcc2ply")
 
     add_includedirs("include")
     add_files("src/**.cpp")
-    add_packages("jsoncpp")
+    add_packages("jsoncpp", "cli11")
 
     if is_plat("windows") then
         add_cxflags("/utf-8", {force = true})
