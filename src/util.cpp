@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <print>
 
 namespace lcc2ply {
 

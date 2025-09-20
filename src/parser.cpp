@@ -1,5 +1,7 @@
 #include <parser.h>
+
 #include <ply_writer.h>
+#include <util.h>
 
 #include <cmath>
 #include <fstream>
@@ -80,12 +82,11 @@ bool Parser::parse_index() {
 			offset += sizeof(ChunkInfo);
 
 			if (DEBUG_OUTPUT) {
-				std::println(std::cout,
-				             "[{}] splat_cnt: {}, offset_bytes = {}, n_bytes = {}",
-				             i,
-				             chunk_info.splat_cnt,
-				             chunk_info.offset_bytes,
-				             chunk_info.n_bytes);
+				_println("[{}] splat_cnt: {}, offset_bytes = {}, n_bytes = {}",
+				         i,
+				         chunk_info.splat_cnt,
+				         chunk_info.offset_bytes,
+				         chunk_info.n_bytes);
 			}
 
 			splat_cnt_per_lod_level[i] += chunk_info.splat_cnt;
@@ -270,12 +271,12 @@ void Parser::write_ply(const std::string &filename) const {
 		entry[3] = (_SplatColorVec[i].r - 0.5f) / C0;
 		entry[4] = (_SplatColorVec[i].g - 0.5f) / C0;
 		entry[5] = (_SplatColorVec[i].b - 0.5f) / C0;
-		entry[6] = std::logf(_SplatColorVec[i].a / (1 - _SplatColorVec[i].a));
+		entry[6] = logf(_SplatColorVec[i].a / (1 - _SplatColorVec[i].a));
 
 		// scale
-		entry[7] = std::logf(_SplatCovVec[i].s_x);
-		entry[8] = std::logf(_SplatCovVec[i].s_y);
-		entry[9] = std::logf(_SplatCovVec[i].s_z);
+		entry[7] = logf(_SplatCovVec[i].s_x);
+		entry[8] = logf(_SplatCovVec[i].s_y);
+		entry[9] = logf(_SplatCovVec[i].s_z);
 
 		// rot
 		entry[10] = _SplatCovVec[i].quat_w;

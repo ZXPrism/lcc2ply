@@ -3,7 +3,7 @@
 #include <cstring>
 #include <filesystem>
 #include <format>
-#include <print>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -22,12 +22,12 @@ template<typename TargetType>
 
 template<typename... Args>
 void _print(std::format_string<Args...> fmt, Args &&...args) {
-	std::print(fmt, std::forward<Args>(args)...);
+	std::cout << std::format(fmt, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
 void _println(std::format_string<Args...> fmt, Args &&...args) {
-	std::println(fmt, std::forward<Args>(args)...);
+	std::cout << std::format(fmt, std::forward<Args>(args)...) << '\n';
 }
 
 template<typename Ty>

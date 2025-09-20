@@ -59,7 +59,7 @@ SplatCov decode_splat_cov(const PackedSplatCov &packed_splat_cov, const Range<f3
 		(quat_2 * SQRT_2) - INV_SQRT_2,
 		0.0f
 	};
-	quat[3] = std::sqrtf(std::max(0.0f, 1.0f - (quat[0] * quat[0]) - (quat[1] * quat[1]) - (quat[2] * quat[2])));
+	quat[3] = sqrtf(std::max(0.0f, 1.0f - (quat[0] * quat[0]) - (quat[1] * quat[1]) - (quat[2] * quat[2])));
 
 	assert(std::max({ quat[0], quat[1], quat[2] }) < quat[3] + 0.1f);
 
