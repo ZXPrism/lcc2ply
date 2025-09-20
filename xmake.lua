@@ -4,7 +4,7 @@ add_rules("mode.debug", "mode.release")
 add_requires("jsoncpp")
 
 target("lcc2ply")
-    set_languages("cxx23")
+    set_languages("cxx20")
     set_kind("binary")
     set_warnings("all", "error", "extra", "pedantic")
 
