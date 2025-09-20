@@ -155,6 +155,8 @@ bool Parser::parse_fg(size_t lod_level) {
 		return false;
 	}
 
+	_println("lcc2ply: parsing foreground data on lod level {}...", lod_level);
+
 	const auto *data_base_addr = fg_data.data();
 	size_t splat_id = 0;
 
