@@ -10,11 +10,9 @@ int main(int argc, char *argv[]) {
 	std::string output_file_path;
 	size_t lod_level = 0;
 
-	app.add_option("-i,--input", scene_path, "Scene path, e.g. scenes/PentHouse")
-	    ->required()
-	    ->check(CLI::ExistingFile);
+	app.add_option("-i,--input", scene_path, "Scene path, e.g. scenes/PentHouse")->required();
 	app.add_option("-o,--output", output_file_path, "Output file (ply) path")->required();
-	app.add_option("-l,--lod", lod_level, "LOD level to extract");
+	app.add_option("-l,--lod", lod_level, "LOD level to extract")->required();
 
 	try {
 		app.parse(argc, argv);
