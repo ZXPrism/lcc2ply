@@ -38,13 +38,6 @@ bool Parser::parse_meta() {
 		_SplatCntPerLodLevel.push_back(splat_cnt_per_lod);
 	}
 
-	_println("lcc2ply: this scene contains {} lod levels", _LodLevelCnt);
-	std::cout << "distribution: [";
-	for (size_t i = 0; i < _LodLevelCnt; i++) {
-		std::cout << _SplatCntPerLodLevel[i] << " ]"[i == _LodLevelCnt - 1];
-	}
-	std::cout << '\n';
-
 	return true;
 }
 
@@ -55,8 +48,8 @@ bool Parser::parse_index() {
 
 	const size_t index_data_size_bytes = index_data.size();
 	const auto *index_data_base_addr = index_data.data();
-	size_t max_chunk_pos_x = 0;
-	size_t max_chunk_pos_y = 0;
+	_MaxChunkPosX = 0;
+	_MaxChunkPosY = 0;
 	size_t offset = 0;
 
 	// consistency check: sum of previous sizes should equal to current offset
@@ -69,8 +62,8 @@ bool Parser::parse_index() {
 		const auto chunk_pos = reinterpret_data<ChunkPos>(index_data_base_addr + offset);
 		offset += sizeof(ChunkPos);
 
-		max_chunk_pos_x = std::max(max_chunk_pos_x, static_cast<size_t>(chunk_pos.x));
-		max_chunk_pos_y = std::max(max_chunk_pos_y, static_cast<size_t>(chunk_pos.y));
+		_MaxChunkPosX = std::max(_MaxChunkPosX, static_cast<size_t>(chunk_pos.x));
+		_MaxChunkPosY = std::max(_MaxChunkPosY, static_cast<size_t>(chunk_pos.y));
 
 		if (DEBUG_OUTPUT) {
 			_println("chunk at ({}, {})", chunk_pos.x, chunk_pos.y);
@@ -115,24 +108,6 @@ bool Parser::parse_index() {
 		std::cout << "current distribution: [";
 		for (size_t i = 0; i < _LodLevelCnt; i++) {
 			std::cout << splat_cnt_per_lod_level[i] << " ]"[i == _LodLevelCnt - 1];
-		}
-		std::cout << '\n';
-	}
-
-	// print chunk distribution diagram
-	std::cout << "  ";
-	for (size_t x = 0; x <= max_chunk_pos_x; x++) {
-		_print("{:3}", x);
-	}
-	std::cout << '\n';
-	for (size_t y = 0; y <= max_chunk_pos_y; y++) {
-		_print("{:2}", y);
-		for (size_t x = 0; x <= max_chunk_pos_x; x++) {
-			if (_ChunkPosToChunkInfoVec.contains({ x, y })) {
-				std::cout << "  X";
-			} else {
-				std::cout << "  O";
-			}
 		}
 		std::cout << '\n';
 	}
@@ -237,6 +212,38 @@ bool Parser::parse_bg() {
 
 bool Parser::parse_sh() {
 	return true;
+}
+
+void Parser::analyze() const {
+	// print lod level info
+	_println("this scene contains {} lod levels", _LodLevelCnt);
+	std::cout << "splat count per lod level: [";
+	for (size_t i = 0; i < _LodLevelCnt; i++) {
+		std::cout << _SplatCntPerLodLevel[i] << " ]"[i == _LodLevelCnt - 1];
+	}
+	std::cout << '\n';
+
+	// print chunk distribution diagram
+	std::cout << "chunk distribution (X: occupied, O: free)\n";
+	std::cout << "  ";
+	for (size_t x = 0; x <= _MaxChunkPosX; x++) {
+		_print("{:3}", x);
+	}
+	std::cout << '\n';
+	for (size_t y = 0; y <= _MaxChunkPosY; y++) {
+		_print("{:2}", y);
+		for (size_t x = 0; x <= _MaxChunkPosX; x++) {
+			if (_ChunkPosToChunkInfoVec.contains({ x, y })) {
+				std::cout << "  X";
+			} else {
+				std::cout << "  O";
+			}
+		}
+		std::cout << '\n';
+	}
+
+	// dump index.bin info to json
+	// TODO
 }
 
 void Parser::write_ply(const std::string &filename) const {

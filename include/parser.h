@@ -20,6 +20,8 @@ private:
 	std::vector<size_t> _SplatCntPerLodLevel;
 	size_t _LodLevelCnt;
 
+	size_t _MaxChunkPosX;
+	size_t _MaxChunkPosY;
 	std::map<std::pair<size_t, size_t>, std::vector<ChunkInfo>> _ChunkPosToChunkInfoVec;
 
 	size_t _SplatCnt;
@@ -37,6 +39,8 @@ public:
 	bool parse_fg(size_t lod_level);
 	bool parse_bg();
 	bool parse_sh();
+
+	void analyze() const;
 
 	void write_ply(const std::string &filename) const;
 };
