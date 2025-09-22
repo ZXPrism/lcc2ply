@@ -115,7 +115,7 @@ bool Parser::parse_index() {
 	return true;
 }
 
-bool Parser::parse_fg(size_t lod_level) {
+bool Parser::parse_fg(size_t lod_level, bool extract_chunk, size_t chunk_pos_x, size_t chunk_pos_y) {
 	if (lod_level >= _LodLevelCnt) {
 		_println("lcc2ply: error: the requested lod_level {} is invalid, the scene only has {} lod levels", lod_level, _LodLevelCnt);
 		return false;
@@ -162,6 +162,12 @@ bool Parser::parse_fg(size_t lod_level) {
 
 	for (const auto &[chunk_pos, all_lod_level_splat_vec] : _ChunkPosToChunkInfoVec) {
 		const auto &chunk_info = all_lod_level_splat_vec[lod_level];
+
+		if (extract_chunk) {
+			if (chunk_pos.first != chunk_pos_x || chunk_pos.second != chunk_pos_y) {
+				continue;
+			}
+		}
 		size_t offset = chunk_info.offset_bytes;
 		const size_t max_offset = offset + chunk_info.n_bytes;
 

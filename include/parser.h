@@ -36,7 +36,7 @@ public:
 
 	bool parse_meta();
 	bool parse_index();
-	bool parse_fg(size_t lod_level);
+	bool parse_fg(size_t lod_level, bool extract_chunk, size_t chunk_pos_x, size_t chunk_pos_y);
 	bool parse_bg();
 	bool parse_sh();
 
