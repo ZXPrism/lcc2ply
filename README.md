@@ -20,5 +20,6 @@ Parsing background data as well as higher SH bands are easy to implement based o
 4. The built executable will be available in the ./bin/ directory.
 
 ## Example Usage
-- `./lcc2ply -i scenes/PentHouse -o output.ply --lod 0`
-- `./lcc2ply -i scenes/PentHouse --analyze`
+- `./lcc2ply -i scenes/PentHouse -o output.ply --lod 0`: extract the scene data on lod level 0 and output to "output.ply"
+- `./lcc2ply -i scenes/PentHouse --analyze`: analyze the scene, print total lod level, splat counts per lod level and chunk distribution diagram
+- `./lcc2ply -i scenes/PentHouse -c 0,6`: extract the scene data on chunk pos (0, 6), on lod level 0 (by default) and output to "output.ply" (by default)
